@@ -111,3 +111,11 @@ TODO tasks:
 ├── tests                   <- Unit tests which can be run with `pytest`.
 ├── .coveragerc             <- Configuration for coverage reports of unit tests.
 └── .pre-commit-config.yaml <- Configuration of pre-commit git hooks.
+```
+
+ ### Running Unit tests - TBD soon
+ We use `pyenv` as the testing framework and the test cases are located in the `tests/` directory.
+ To run the test cases, run 
+ ```
+pyenv -v tests/
+```
