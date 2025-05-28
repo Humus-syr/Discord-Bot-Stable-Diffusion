@@ -9,4 +9,5 @@ model_server:
 paths:
   data_path: ${hydra:runtime.cwd}/data/
   log_path: ./logs
+LOG_LEVEL: DEBUG
 open_ai_fallback: True

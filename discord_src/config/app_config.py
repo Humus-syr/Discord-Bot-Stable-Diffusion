@@ -31,6 +31,7 @@ class ProjPaths:
 @dataclass
 class AppConfig:
   open_ai_fallback: bool = MISSING
+  LOG_LEVEL: str = 'INFO'  # can be DEBUG, INFO, WARNING, ERROR, CRITICAL
   model_server: ModelServerParams = dataclasses.field(default_factory = ModelServerParams)  # model params
   paths: ProjPaths = dataclasses.field(default_factory = ProjPaths)
 
