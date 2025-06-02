@@ -10,13 +10,16 @@ from discord_src.bot import discord_bot#, image_client
 
 import discord_src.config.app_config  # load the config store.
 
+import hydra
+from omegaconf import DictConfig, OmegaConf
+from discord_src.config.app_config import AppConfig
+
+
 
 #### INIT CODE HERE
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-CONFIG_PATH = "./discord_src/utils/config.yml"
-
-config = None
+CONFIG_PATH = "./discord_src/config/"
 
 # Logger
 logging.basicConfig(level=logging.INFO,
@@ -25,24 +28,21 @@ logging.basicConfig(level=logging.INFO,
 					format = "%(asctime)s %(levelname)s %(message)s")
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 logger.info('Initing config')
 
-# config = utils.load_config(CONFIG_PATH)
-
 ####INIT ENDS
-
-
-logger.info('Launching bot')
 
 # os.environ["CUDasdfasf"] = "1"
 
+@hydra.main(version_base = None, config_path=CONFIG_PATH, config_name="config")
+def main(cfg: DictConfig) -> None:
+	validated_config = AppConfig(**OmegaConf.to_container(cfg, resolve=True))
+	logger.setLevel(validated_config.LOG_LEVEL)
+	# config_obj = OmegaConf.to_object(config)
+	logger.info('Launching bot')
 
-def main() -> None:
-	# TODO: Check and launch the Flask application in parallel? Maybe make a separate script to do that. Like a pipeline.
-
-	discord_client = discord_bot.create_discord_client(config)
+	discord_client = discord_bot.create_discord_client(validated_config)
 	discord_client.run(TOKEN)
 
 

@@ -42,9 +42,10 @@ class AppConfig:
 
   
   @classmethod
-  def from_dict(cls, cfg: Dict[str, Any])):
+  def from_dict(cls, cfg: Dict[str, Any]):
       return cls(**OmegaConf.to_container(cfg, resolve=True))
 
+# Register the AppConfig with Hydra's ConfigStore
 cs = ConfigStore.instance()
 cs.store(name = 'app_config', node = AppConfig)
 
@@ -54,7 +55,7 @@ def get_config(cfg: DictConfig):
     # print(f'Loaded config: {OmegaConf.to_yaml(cfg)}')
     # return OmegaConf.to_object(cfg)
     validated_config = AppConfig(**OmegaConf.to_container(cfg, resolve=True))
-    print(type(validated_config))
+    # print(type(validated_config))
     # return validated_config
 
 if __name__ == '__main__':

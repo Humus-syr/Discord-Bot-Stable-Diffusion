@@ -65,7 +65,7 @@ class Client(commands.Bot):
 
         print(f'{self.user} has connected to Discord!')
 
-        @hydra.main(version_base = '1.3', config_path='../../discord_src/config', config_name="config")
+        # @hydra.main(version_base = '1.3', config_path='../../discord_src/config', config_name="config")
         def chat_gpt_key(cfg: AppConfig):
             # initialize Chat GPT Api if we have the token.
             if cfg.open_ai_fallback:
@@ -136,10 +136,11 @@ class Client(commands.Bot):
 # client.tree.add_command(ai_group.AIgroup(client, config), guild=MY_GUILD)
 
 
-def create_discord_client(config: dict[str, any]) -> discord.Client:
+
+def create_discord_client(config: AppConfig) -> discord.Client:
     intents = discord.Intents.default()
     intents.message_content = True
-    
+
     # switch between these 2 as activity for gags.
     watching = discord.Activity(name='you intently', type = discord.ActivityType.watching)
     playing = discord.Game(name='with life')
