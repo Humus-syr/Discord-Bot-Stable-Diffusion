@@ -8,7 +8,7 @@ from threading import Thread
 from discord_src.utils import utils
 from discord_src.bot import discord_bot#, image_client
 
-import discord_src.config.app_config  # load the config store.
+# import discord_src.config.app_config  # load the config store.
 
 import hydra
 from omegaconf import DictConfig, OmegaConf

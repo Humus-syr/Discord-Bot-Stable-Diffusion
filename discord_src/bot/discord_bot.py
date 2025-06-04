@@ -20,27 +20,6 @@ from discord.ext import commands
 # Logger
 logger = logging.getLogger(__name__)
 
-# TODO: remove this later, we should read this just once in run_bot script and pass it to this function.
-# CONFIG_PATH = "./discord_src/utils/config.yml"
-# config = utils.load_config(CONFIG_PATH)
-
-# TODO: check this. Env vars not workings
-print(f'hydra env va? HYDRA_FULL_ERROR : {os.getenv("HYDRA_FULL_ERROR")}')
-
-# @hydra.main(version_base = '1.3', config_path='../../discord_src/config', config_name="config")
-# def do_this(cfg: AppConfig):
-#     # print(f'cfg: {cfg}')
-#     # return
-#     # this line actually runs the checks of pydantic
-#     from omegaconf import OmegaConf
-#     OmegaConf.to_object(cfg)
-#     # log to console and into the `outputs` folder per default
-#     print(f"\n{OmegaConf.to_yaml(cfg)}")
-
-#     print(f'habiibi: {cfg.paths.data_path}')
-
-# do_this()
-
 # For Debugging. Enable these features only for this guild
 MY_GUILD = discord.Object(id=167319816649179149)
 
@@ -71,7 +50,7 @@ class Client(commands.Bot):
             if cfg.open_ai_fallback:
                 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-        chat_gpt_key()  # using it like this for now. Will use compose later.
+        # chat_gpt_key()  # using it like this for now. Will use compose later.
 
     async def on_message(self, message):
         """I don't plan to use this often, but this is for adding some secret features."""
