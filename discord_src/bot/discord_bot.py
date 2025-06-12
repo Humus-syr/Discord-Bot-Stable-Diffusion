@@ -77,6 +77,14 @@ class Client(commands.Bot):
         # Need to call this for discord to work properly
         await self.process_commands(message)
 
+    async def on_error(event, *args, **kwargs):
+        print(f'error: {event}')
+        with open('err.log', 'a') as f:
+            if event == 'on_message':
+                f.write(f'Unhandled message: {args[0]}\n')
+            else:
+                raise
+
 # intents = discord.Intents.default()
 # intents.message_content = True
 
@@ -84,15 +92,6 @@ class Client(commands.Bot):
 # watching = discord.Activity(name='you intently', type = discord.ActivityType.watching)
 # playing = discord.Game(name='with life')
 # client = Client(intents = intents, command_prefix = '!', activity = watching)  # or activity = playing
-
-# @client.event
-# async def on_error(event, *args, **kwargs):
-#     print(f'error: {event}')
-#     with open('err.log', 'a') as f:
-#         if event == 'on_message':
-#             f.write(f'Unhandled message: {args[0]}\n')
-#         else:
-#             raise
 
 # bot = commands.Bot(command_prefix='!', intents = intents)
 
