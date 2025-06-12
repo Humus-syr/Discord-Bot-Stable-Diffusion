@@ -100,11 +100,10 @@ class Client(commands.Bot):
 # async def test(interaction):
 #     await interaction.response.send_message("Test")
 
-
-# @client.command(name='catcall')
-# async def tease(ctx):
-#     response = "Yo cutie. Waccha up to?"
-#     await ctx.send(response)
+@commands.command(name='catcall')
+async def tease(ctx):
+    response = "Yo cutie. Waccha up to?"
+    await ctx.send(response)
 
 # @client.tree.command(guild=MY_GUILD)
 # async def slash(interaction: discord.Interaction, number: int, string: str):
@@ -122,7 +121,9 @@ def create_discord_client(config: AppConfig) -> discord.Client:
     # switch between these 2 as activity for gags.
     watching = discord.Activity(name='you intently', type = discord.ActivityType.watching)
     playing = discord.Game(name='with life')
-    client = Client(intents = intents, command_prefix = '!', activity = watching)  # or activity = playing
+    random_status = random.choice([watching, playing])
+    client = Client(intents = intents, command_prefix = '!', activity = random_status)  # or activity = playing
+    client.add_command(tease)
 
     # update_discord_client(client)
     return client
