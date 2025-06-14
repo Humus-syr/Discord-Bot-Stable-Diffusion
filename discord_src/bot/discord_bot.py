@@ -100,10 +100,33 @@ class Client(commands.Bot):
 # async def test(interaction):
 #     await interaction.response.send_message("Test")
 
-@commands.command(name='catcall')
+@commands.hybrid_command(name='catcall')
 async def tease(ctx):
     response = "Yo cutie. Waccha up to?"
     await ctx.send(response)
+
+def get_model_type(msg: str) -> str:
+    """Extracts the model type from the message."""
+    # TODO: Do this in a more robust way.
+    if msg.lower().startswith('chat'):
+        return 'chat'
+    elif msg.lower().startswith('image'):
+        return 'image'
+    else:
+        return 'unknown'
+
+@commands.hybrid_command(name='stubby')
+async def stubby_command(ctx, *, arg: str = ""):
+    """Stubby command to respond with a message."""
+    command_type = get_model_type(arg)
+    if command_type == 'chat':
+        response = "You called for a chat model? I'm here to chat with you!"
+    elif command_type == 'image':
+        response = "You called for an image model? I can generate images for you!"
+    else:
+        response = "What can I do for you? I can chat or generate images."
+    await ctx.send(response)
+
 
 # @client.tree.command(guild=MY_GUILD)
 # async def slash(interaction: discord.Interaction, number: int, string: str):
@@ -124,6 +147,7 @@ def create_discord_client(config: AppConfig) -> discord.Client:
     random_status = random.choice([watching, playing])
     client = Client(intents = intents, command_prefix = '!', activity = random_status)  # or activity = playing
     client.add_command(tease)
+    client.add_command(stubby_command)
 
     # update_discord_client(client)
     return client
