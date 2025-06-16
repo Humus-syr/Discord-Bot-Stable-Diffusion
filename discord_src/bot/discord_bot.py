@@ -30,6 +30,11 @@ class Client(commands.Bot):
     async def setup_hook(self):
         print('Calling setup_hook(self):')
 
+    def set_init_params(self, config: AppConfig):
+        """Initialize the client with the config parameters."""
+        self.config = config
+        print(f'Config: {self.config}')
+
     async def on_ready(self):
         """Initialize some parameters and register slash commands once discord connection is established."""
         await self.tree.sync(guild=MY_GUILD)
@@ -66,7 +71,7 @@ class Client(commands.Bot):
         if message.content == 'raise exception':
             raise discord.DiscordException
 
-        if message.content == 'show image':
+        if message.content.lower() == 'hey stubby! show image':
             await message.channel.send(file = discord.File('./data/stable-diffusion-images-generation.png'))
 
         # Keep track and disable the message for 10 mins.
@@ -117,14 +122,51 @@ def get_model_type(msg: str) -> str:
 
 @commands.hybrid_command(name='stubby')
 async def stubby_command(ctx, *, arg: str = ""):
-    """Stubby command to respond with a message."""
+    """Stubby command to respond with a message.""" 
     command_type = get_model_type(arg)
-    if command_type == 'chat':
-        response = "You called for a chat model? I'm here to chat with you!"
-    elif command_type == 'image':
-        response = "You called for an image model? I can generate images for you!"
-    else:
+
+    json_payload = {
+        'command': command_type,
+        'message': arg
+    }
+
+    if command_type != 'chat' and command_type != 'image':
         response = "What can I do for you? I can chat or generate images."
+
+    # make an http post call on localhost to get the response based on the command type
+    async with aiohttp.ClientSession() as session:
+        host = 'localhost'
+        port = 8000
+        endpoint = 'command'
+        if command_type == 'chat':
+            host = ctx.bot.config.model_server.chat_server
+            port = ctx.bot.config.model_server.chat_port
+            endpoint = ctx.bot.config.model_server.chat_uri
+        elif command_type == 'image':
+            host = ctx.bot.config.model_server.stable_diffusion_server
+            port = ctx.bot.config.model_server.stable_diffusion_port
+            endpoint = ctx.bot.config.model_server.stable_diffusion_uri
+
+        url = f'http://{host}:{port}/{endpoint}'
+
+        # Should I even handle log injection here? Maybe let's make it a TODO for now.
+        logger.info(f'Stubby called url: {url}, json_payload: {json_payload}')
+
+        async with session.post(url, json=json_payload) as response:
+            if response.status == 200:
+                data = await response.json()
+                response = data.get('response', 'No response from server.')
+            else:
+                response = f'Error: {response.status}'
+
+
+
+    # if command_type == 'chat':
+    #     response = "You called for a chat model? I'm here to chat with you!"
+    # elif command_type == 'image':
+    #     response = "You called for an image model? I can generate images for you!"
+    # else:
+    #     response = "What can I do for you? I can chat or generate images."
     await ctx.send(response)
 
 
@@ -146,6 +188,7 @@ def create_discord_client(config: AppConfig) -> discord.Client:
     playing = discord.Game(name='with life')
     random_status = random.choice([watching, playing])
     client = Client(intents = intents, command_prefix = '!', activity = random_status)  # or activity = playing
+    client.set_init_params(config)
     client.add_command(tease)
     client.add_command(stubby_command)
 
