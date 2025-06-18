@@ -122,7 +122,7 @@ def get_model_type(msg: str) -> str:
 
 @commands.hybrid_command(name='stubby')
 async def stubby_command(ctx, *, arg: str = ""):
-    """Stubby command to respond with a message.""" 
+    """Stubby command to respond with a message."""
     command_type = get_model_type(arg)
 
     json_payload = {
@@ -130,8 +130,11 @@ async def stubby_command(ctx, *, arg: str = ""):
         'message': arg
     }
 
+    response = ""
     if command_type != 'chat' and command_type != 'image':
         response = "What can I do for you? I can chat or generate images."
+        await ctx.send(response)
+        return
 
     # make an http post call on localhost to get the response based on the command type
     async with aiohttp.ClientSession() as session:
@@ -157,16 +160,10 @@ async def stubby_command(ctx, *, arg: str = ""):
                 data = await response.json()
                 response = data.get('response', 'No response from server.')
             else:
-                response = f'Error: {response.status}'
+                response = f'AI servier responded with error:'
+                logger.error(f'Error response from server: {response.status}')
 
-
-
-    # if command_type == 'chat':
-    #     response = "You called for a chat model? I'm here to chat with you!"
-    # elif command_type == 'image':
-    #     response = "You called for an image model? I can generate images for you!"
-    # else:
-    #     response = "What can I do for you? I can chat or generate images."
+    # Send the response back to the discord channel
     await ctx.send(response)
 
 
